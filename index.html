@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BitcoinHalvingCountdown.com tracks the next Bitcoin halving countdown with live block data, halving history, and FAQs for traders, miners, and investors.">
+  <meta name="keywords" content="Bitcoin halving countdown, next Bitcoin halving, BTC halving date, Bitcoin halving history, Bitcoin block reward, BitcoinHalvingCountdown.com">
+  <meta property="og:title" content="Bitcoin Halving Countdown">
+  <meta property="og:description" content="Track the next Bitcoin halving event with live countdown and real-time block updates">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#F7931A">
+  <title>Bitcoin Halving Countdown | Next Halving 2028</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>₿</text></svg>">
+</head>
+<body>
+  <div x-data="bitcoinHalving" class="main-container min-h-screen flex flex-col">
+    
+    <!-- Header -->
+    <header class="pt-8 md:pt-12 lg:pt-16 pb-6 md:pb-8 lg:pb-10 text-center px-4">
+      <div class="flex items-center justify-center gap-4 md:gap-5 mb-5">
+        <!-- Bitcoin Logo SVG -->
+        <svg class="bitcoin-logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="30" fill="#F7931A"/>
+          <path fill="#FFFFFF" d="M46.1,27.4c0.6-4.1-2.5-6.3-6.8-7.8l1.4-5.6l-3.4-0.8l-1.4,5.4c-0.9-0.2-1.8-0.4-2.7-0.7l1.4-5.5l-3.4-0.8
+            l-1.4,5.6c-0.7-0.2-1.5-0.4-2.2-0.5l0-0.1l-4.7-1.2l-0.9,3.6c0,0,2.5,0.6,2.5,0.6c1.4,0.3,1.6,1.2,1.6,1.9l-1.6,6.5
+            c0.1,0,0.2,0.1,0.3,0.1c-0.1,0-0.2,0-0.3-0.1l-2.3,9.1c-0.2,0.4-0.6,1.1-1.6,0.8c0,0.1-2.5-0.6-2.5-0.6l-1.7,3.9l4.4,1.1
+            c0.8,0.2,1.6,0.4,2.4,0.6l-1.4,5.7l3.4,0.8l1.4-5.6c0.9,0.3,1.8,0.5,2.7,0.7l-1.4,5.5l3.4,0.8l1.4-5.7c5.9,1.1,10.4,0.7,12.3-4.7
+            c1.5-4.3-0.1-6.8-3.2-8.4C44.8,31.7,46.4,30,46.1,27.4z M39.5,38.8c-1.1,4.3-8.4,2-10.8,1.4l1.9-7.7C33,33.1,40.6,34.3,39.5,38.8z
+            M40.6,27.3c-1,3.9-7.1,1.9-9,1.4l1.7-7C35.2,22.2,41.6,23.2,40.6,27.3z"/>
+        </svg>
+        <h1 class="header-title text-3xl md:text-5xl lg:text-6xl">
+          Bitcoin Halving Countdown
+        </h1>
+      </div>
+      <p class="header-subtitle text-base md:text-lg">
+        Countdown to the <span x-text="halvingNumber + getOrdinalSuffix(halvingNumber)"></span> Bitcoin halving on BitcoinHalvingCountdown.com
+      </p>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col justify-center py-6 md:py-10 lg:py-12 px-4">
+      
+      <!-- Loading State -->
+      <div x-show="loading" x-cloak class="flex items-center justify-center py-20">
+        <span class="loading-spinner"></span>
+        <span class="loading-text">Fetching latest block data...</span>
+      </div>
+      
+      <!-- Countdown Display -->
+      <div x-show="!loading" x-cloak class="w-full max-w-7xl mx-auto">
+        
+        <!-- Countdown Grid - Always 4 columns -->
+        <div class="countdown-container">
+          <div class="countdown-card">
+            <div class="countdown-value" x-text="days"></div>
+            <div class="countdown-label">Days</div>
+          </div>
+          
+          <div class="countdown-card">
+            <div class="countdown-value" x-text="padZero(hours)"></div>
+            <div class="countdown-label">Hours</div>
+          </div>
+          
+          <div class="countdown-card">
+            <div class="countdown-value" x-text="padZero(minutes)"></div>
+            <div class="countdown-label">Minutes</div>
+          </div>
+          
+          <div class="countdown-card">
+            <div class="countdown-value" x-text="padZero(seconds)"></div>
+            <div class="countdown-label">Seconds</div>
+          </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-section">
+          <div class="progress-labels">
+            <span>Block <span x-text="formatNumber(currentBlock)"></span></span>
+            <span class="progress-percent"><span x-text="progressPercent.toFixed(2)"></span>%</span>
+            <span>Block <span x-text="formatNumber(nextHalvingBlock)"></span></span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" :style="'width: ' + Math.min(Math.max(progressPercent, 0.5), 100) + '%'"></div>
+          </div>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Current Block</div>
+            <div class="stat-value" x-text="formatNumber(currentBlock)"></div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-label">Blocks Remaining</div>
+            <div class="stat-value" x-text="formatNumber(blocksRemaining)"></div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-label">Block Reward</div>
+            <div class="stat-value stat-value-small reward-display">
+              <span x-text="formatReward(currentReward)"></span>
+              <span class="reward-arrow">→</span>
+              <span x-text="formatReward(nextReward)"></span>
+              <span class="reward-btc">BTC</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-label">Estimated Date</div>
+            <div class="stat-value stat-value-small" x-text="formatDate(targetDate)"></div>
+          </div>
+        </div>
+        
+        <!-- Info Section -->
+        <div class="info-section-wrapper">
+          <div class="info-card text-center">
+            <h2 class="info-title">What is the Bitcoin Halving?</h2>
+            <p class="info-text">
+              Every <strong>210,000 blocks</strong> (approximately every 4 years), 
+              the Bitcoin block reward is cut in half. This event reduces the rate at which new 
+              bitcoins are created, making Bitcoin increasingly scarce over time. The halving is 
+              a fundamental part of Bitcoin's deflationary monetary policy, ensuring a maximum supply 
+              of 21 million coins.
+            </p>
+          </div>
+        </div>
+
+        <section class="content-sections" aria-label="Bitcoin halving explainers, history, and FAQ">
+          <article class="info-card">
+            <h2 class="info-title">Bitcoin halving countdown insights</h2>
+            <p class="info-text">
+              BitcoinHalvingCountdown.com delivers a live Bitcoin halving countdown so you always know how close we are to block <span x-text="formatNumber(nextHalvingBlock)"></span>, the moment the BTC block reward is cut in half again.
+            </p>
+            <ul class="info-list">
+              <li>
+                <strong>Real-time Bitcoin halving countdown</strong> uses the latest network data — currently block <span x-text="formatNumber(currentBlock)"></span>.
+              </li>
+              <li>
+                <strong>Next Bitcoin halving date estimates</strong> adjust automatically with every new block and account for the ten-minute average block time.
+              </li>
+              <li>
+                <strong>Bitcoin halving history and education</strong> explain what happens to miner rewards, supply inflation, and BTC issuance every 210,000 blocks.
+              </li>
+              <li>
+                <strong>Actionable context</strong> helps traders, miners, and long-term investors plan for the next supply shock event.
+              </li>
+            </ul>
+          </article>
+
+          <article class="info-card">
+            <h2 class="info-title">Past Bitcoin halving data</h2>
+            <p class="info-text">
+              Each Bitcoin halving tightened issuance from 50 BTC per block in 2009 to just 3.125 BTC after 2024. Review the Bitcoin halving timeline to understand why the supply curve keeps trending lower.
+            </p>
+            <div class="halving-table-wrapper">
+              <table class="halving-table">
+                <caption>Historical Bitcoin halving timeline</caption>
+                <thead>
+                  <tr>
+                    <th>Halving</th>
+                    <th>Block Height</th>
+                    <th>Date (UTC)</th>
+                    <th>Reward Change</th>
+                    <th>Approx. Price*</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1st (2012)</td>
+                    <td>210,000</td>
+                    <td>Nov 28, 2012</td>
+                    <td>50 → 25 BTC</td>
+                    <td>~$12</td>
+                  </tr>
+                  <tr>
+                    <td>2nd (2016)</td>
+                    <td>420,000</td>
+                    <td>Jul 09, 2016</td>
+                    <td>25 → 12.5 BTC</td>
+                    <td>~$650</td>
+                  </tr>
+                  <tr>
+                    <td>3rd (2020)</td>
+                    <td>630,000</td>
+                    <td>May 11, 2020</td>
+                    <td>12.5 → 6.25 BTC</td>
+                    <td>~$8,700</td>
+                  </tr>
+                  <tr>
+                    <td>4th (2024)</td>
+                    <td>840,000</td>
+                    <td>Apr 19, 2024</td>
+                    <td>6.25 → 3.125 BTC</td>
+                    <td>~$60,000</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="table-note">*Approximate USD spot price at the halving block; data aggregated from public market feeds.</p>
+          </article>
+
+          <article id="bitcoin-halving-faq" class="info-card">
+            <h2 class="info-title">Bitcoin halving FAQ</h2>
+            <div class="faq-section">
+              <div class="faq-item">
+                <h3 class="faq-question">When is the next Bitcoin halving?</h3>
+                <p class="faq-answer">
+                  The next Bitcoin halving is projected for <span x-text="formatDate(targetDate)"></span> when block <span x-text="formatNumber(nextHalvingBlock)"></span> is mined. Our countdown refreshes with every block from mempool.space so the date remains accurate even if hash rate fluctuates.
+                </p>
+              </div>
+              <div class="faq-item">
+                <h3 class="faq-question">Why does Bitcoin halve every 210,000 blocks?</h3>
+                <p class="faq-answer">
+                  Bitcoin&rsquo;s code hard-caps supply at 21 million coins by cutting the block subsidy in half every 210,000 blocks, or roughly four years. This predictable schedule slows the issuance rate and enforces Bitcoin&rsquo;s deflationary monetary policy.
+                </p>
+              </div>
+              <div class="faq-item">
+                <h3 class="faq-question">How accurate is the Bitcoin halving countdown date?</h3>
+                <p class="faq-answer">
+                  BitcoinHalvingCountdown.com constantly recalculates the ETA using the trailing average block time. Because actual block production varies, the countdown is expressed as an estimate that tightens as we approach the halving block.
+                </p>
+              </div>
+              <div class="faq-item">
+                <h3 class="faq-question">What happened during past Bitcoin halvings?</h3>
+                <p class="faq-answer">
+                  Previous halvings in 2012, 2016, 2020, and 2024 immediately cut miner rewards and gradually reduced BTC inflation. Historically, Bitcoin entered multi-month accumulation phases followed by new all-time highs, although past performance does not guarantee future results.
+                </p>
+              </div>
+              <div class="faq-item">
+                <h3 class="faq-question">Where does the countdown data come from?</h3>
+                <p class="faq-answer">
+                  Live block heights, rewards, and mempool statistics are fetched directly from <a href="https://mempool.space" target="_blank" rel="noopener" class="footer-link">mempool.space</a>, ensuring trustworthy data for every Bitcoin halving countdown.
+                </p>
+              </div>
+            </div>
+          </article>
+        </section>
+        
+      </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="py-6 md:py-8 text-center px-4">
+      <p class="footer-text">
+        Block data from <a href="https://mempool.space" target="_blank" rel="noopener" class="footer-link">mempool.space</a>
+      </p>
+      <p class="footer-text mt-2 opacity-60">
+        Estimates based on ~10 minute average block time
+      </p>
+    </footer>
+    
+  </div>
+  
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
