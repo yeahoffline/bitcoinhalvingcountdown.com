@@ -3,6 +3,9 @@
 A beautiful, real-time Bitcoin halving countdown website built with Vite, Tailwind CSS, and Alpine.js.
 
 ![Bitcoin Halving Countdown](https://img.shields.io/badge/Bitcoin-Halving-F7931A?style=for-the-badge&logo=bitcoin&logoColor=white)
+[![DCA.bot](https://img.shields.io/badge/Powered%20by-DCA.bot-10B981?style=for-the-badge)](https://dca.bot)
+
+🌐 **Live Site**: [BitcoinHalvingCountdown.com](https://bitcoinhalvingcountdown.com)
 
 ## Features
 
@@ -13,6 +16,19 @@ A beautiful, real-time Bitcoin halving countdown website built with Vite, Tailwi
 - 📱 **Responsive** - Works perfectly on mobile, tablet, and desktop
 - ⚡ **Fast** - Built with Vite for lightning-fast builds
 - 🌐 **Static** - Builds to static files for easy deployment anywhere
+- 📈 **Halving History** - Complete table of past Bitcoin halvings with dates and prices
+- ❓ **FAQ Section** - Educational content about Bitcoin halvings
+
+## Stack More Sats with DCA.bot
+
+This site is brought to you by [DCA.bot](https://dca.bot) — an AI-powered Dollar Cost Averaging bot that helps you stack Bitcoin smarter:
+
+- 🤖 **AI-Powered Analysis** - Uses machine learning to analyze RSI, MVRV, and on-chain data
+- 📉 **Buy the Dip** - Automatically increases buys when BTC price is undervalued
+- 📊 **Technical Indicators** - Detects overbought/oversold conditions in real-time
+- ⚡ **Halving Ready** - Position yourself before supply shocks
+
+👉 [Start stacking smarter with DCA.bot](https://dca.bot?utm_source=github&utm_medium=readme&utm_campaign=halving2028)
 
 ## How It Works
 
@@ -29,6 +45,7 @@ No configuration needed - the code will correctly countdown to every future halv
 - **Vite** - Next generation frontend tooling
 - **Tailwind CSS v4** - Utility-first CSS framework
 - **Alpine.js** - Lightweight JavaScript framework
+- **mempool.space API** - Real-time Bitcoin block data
 
 ## Development
 
@@ -59,6 +76,11 @@ dist/
 ```
 
 Simply copy the contents of `dist/` to your web hosting.
+
+## Related Projects
+
+- [DCA.bot](https://dca.bot) - AI-powered Bitcoin DCA bot
+- [mempool.space](https://mempool.space) - Bitcoin block explorer
 
 ## License
 
